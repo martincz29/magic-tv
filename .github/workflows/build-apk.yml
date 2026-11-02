@@ -27,6 +27,12 @@ jobs:
           gradle-version: '8.9'
       - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Prepare final Magic TV UI
+        run: |
+          mkdir -p app/src/main/res/drawable-nodpi
+          base64 -d app/src/main/res/raw/wallpaper.b64 > app/src/main/res/drawable-nodpi/fantasy_wallpaper.webp
+          rm -f app/src/main/res/raw/wallpaper.b64
+          python3 tools/apply_wallpaper.py
       - name: Build APK
         run: gradle assembleDebug
       - name: Prepare download site
