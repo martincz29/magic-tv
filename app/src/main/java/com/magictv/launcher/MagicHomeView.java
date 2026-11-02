@@ -238,7 +238,8 @@ public class MagicHomeView extends View {
     }
 
     private boolean appsKeys(int k){
-        int n=Math.min(installed.size(),15); if(n==0 && k==KeyEvent.KEYCODE_BACK){page=0;invalidate();return true;}
+        int n=Math.min(installed.size(),15);
+        if(n==0 && k==KeyEvent.KEYCODE_BACK){ boolean binding=bindTarget!=null; bindTarget=null; page=binding?2:0; focus=binding?0:3; invalidate(); return true; }
         if(k==KeyEvent.KEYCODE_DPAD_LEFT){ appFocus=Math.max(0,appFocus-1); invalidate(); return true; }
         if(k==KeyEvent.KEYCODE_DPAD_RIGHT){ appFocus=Math.min(Math.max(0,n-1),appFocus+1); invalidate(); return true; }
         if(k==KeyEvent.KEYCODE_DPAD_UP){ appFocus=Math.max(0,appFocus-5); invalidate(); return true; }

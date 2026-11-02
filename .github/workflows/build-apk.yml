@@ -3,7 +3,7 @@ name: Build Magic TV APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, feat/ornamental-magic-tv-ui ]
 
 permissions:
   contents: read
@@ -28,7 +28,7 @@ jobs:
       - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build APK
-        run: gradle assembleDebug
+        run: gradle clean assembleDebug
       - name: Prepare download site
         run: |
           mkdir -p site
@@ -43,6 +43,7 @@ jobs:
           path: site
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
