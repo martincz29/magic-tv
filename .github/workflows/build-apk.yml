@@ -3,10 +3,10 @@ name: Build Magic TV APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main, feat/customizable-launcher-v2 ]
+    branches: [ main ]
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -28,7 +28,7 @@ jobs:
       - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build APK
-        run: gradle clean testDebugUnitTest assembleDebug
+        run: gradle assembleDebug
       - name: Prepare download site
         run: |
           mkdir -p site
@@ -38,25 +38,11 @@ jobs:
         with:
           name: MagicTV-v0.1-apk
           path: app/build/outputs/apk/debug/app-debug.apk
-      - name: Publish customizable launcher preview
-        if: github.ref == 'refs/heads/feat/customizable-launcher-v2'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          cp app/build/outputs/apk/debug/app-debug.apk MagicTV-customizable-launcher-v2.apk
-          gh release create customizable-launcher-v2-preview \
-            MagicTV-customizable-launcher-v2.apk \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
-            --title "Magic TV customizable launcher v2 preview" \
-            --notes "Test APK built and verified from feat/customizable-launcher-v2. Not merged to main." \
-            --prerelease
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
   deploy:
-    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
