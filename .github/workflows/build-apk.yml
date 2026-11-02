@@ -28,7 +28,7 @@ jobs:
       - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build APK
-        run: gradle clean assembleDebug
+        run: gradle clean testDebugUnitTest assembleDebug
       - name: Prepare download site
         run: |
           mkdir -p site
