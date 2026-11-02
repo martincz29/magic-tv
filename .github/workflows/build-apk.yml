@@ -3,10 +3,10 @@ name: Build Magic TV APK
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, feat/ornamental-magic-tv-ui ]
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -28,7 +28,7 @@ jobs:
       - name: Install SDK
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build APK
-        run: gradle assembleDebug
+        run: gradle clean assembleDebug
       - name: Prepare download site
         run: |
           mkdir -p site
@@ -38,11 +38,25 @@ jobs:
         with:
           name: MagicTV-v0.1-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish feature branch preview APK
+        if: github.ref == 'refs/heads/feat/ornamental-magic-tv-ui'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk MagicTV-ornamental-ui.apk
+          gh release create ornamental-ui-preview-v1 \
+            MagicTV-ornamental-ui.apk \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "Magic TV ornamental UI preview" \
+            --notes "Preview APK built from feat/ornamental-magic-tv-ui. Not merged to main." \
+            --prerelease
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
