@@ -30,7 +30,8 @@ jobs:
       - name: Prepare final Magic TV UI
         run: |
           mkdir -p app/src/main/res/drawable-nodpi
-          base64 -d app/src/main/res/raw/wallpaper.b64 > app/src/main/res/drawable-nodpi/fantasy_wallpaper.webp
+          cat wallpaper-parts/part00.txt wallpaper-parts/part01.txt wallpaper-parts/part02.txt wallpaper-parts/part03.txt wallpaper-parts/part04.txt wallpaper-parts/part05.txt > /tmp/wallpaper.b64
+          base64 -d /tmp/wallpaper.b64 > app/src/main/res/drawable-nodpi/fantasy_wallpaper.webp
           rm -f app/src/main/res/raw/wallpaper.b64
           python3 tools/apply_wallpaper.py
       - name: Build APK
