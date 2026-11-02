@@ -5,12 +5,17 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -24,7 +29,28 @@ jobs:
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
       - name: Build APK
         run: gradle assembleDebug
+      - name: Prepare download site
+        run: |
+          mkdir -p site
+          cp web/index.html site/index.html
+          cp app/build/outputs/apk/debug/app-debug.apk site/MagicTV-v0.1.apk
       - uses: actions/upload-artifact@v4
         with:
           name: MagicTV-v0.1-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
