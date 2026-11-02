@@ -26,3 +26,5 @@ jobs:
         with:
           name: MagicTV-v0.1-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+# public-repo rebuild trigger
